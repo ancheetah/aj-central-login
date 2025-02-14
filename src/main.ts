@@ -1,24 +1,17 @@
 import './style.css'
-import typescriptLogo from './typescript.svg'
-import viteLogo from '/vite.svg'
-import { setupCounter } from './counter.ts'
+import { Config, FRAuth } from '@forgerock/javascript-sdk';
 
-document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-  <div>
-    <a href="https://vite.dev" target="_blank">
-      <img src="${viteLogo}" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://www.typescriptlang.org/" target="_blank">
-      <img src="${typescriptLogo}" class="logo vanilla" alt="TypeScript logo" />
-    </a>
-    <h1>Vite + TypeScript</h1>
-    <div class="card">
-      <button id="counter" type="button"></button>
-    </div>
-    <p class="read-the-docs">
-      Click on the Vite and TypeScript logos to learn more
-    </p>
-  </div>
-`
+Config.set({
+  clientId: 'aj-public-sdk-client', // e.g. 'ForgeRockSDKClient'
+  redirectUri: `http://localhost:3000`, // e.g. 'https://sdkapp.example.com:8443/callback.html'
+  scope: 'openid profile email address revoke', // e.g. 'openid profile email address phone'
+  serverConfig: {
+      baseUrl: 'https://openam-sdks.forgeblocks.com/am', // e.g. 'https://myorg.forgeblocks.com/am' or 'https://openam.example.com:8443/openam'
+      timeout: 3000, // 90000 or less
+  },
+  realmPath: 'alpha', // e.g. 'alpha' or 'root'
+  tree: 'Login', // e.g. 'sdkAuthenticationTree' or 'Login'
+});
 
-setupCounter(document.querySelector<HTMLButtonElement>('#counter')!)
+const firstStep = FRAuth.start();
+console.log('firstStep', firstStep);
