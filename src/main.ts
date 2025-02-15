@@ -16,12 +16,12 @@ Config.set({
 const panelFormElem = document.getElementById('panel-form');
 const submitButtonElem = document.getElementById('submit-button');
 
-async function handleSubmit(event: Event, step?: FRStep) {
+async function handleSubmit(event: Event, step?: FRStep): Promise<void> {
   event.preventDefault();
   console.log('submitted!', step);
 }
 
-async function nextStep(previousStep?: FRStep) {
+async function nextStep(previousStep?: FRStep): Promise<void> {
   try {
     const nextStep = await FRAuth.next(previousStep);
     console.log('nextStep', nextStep);
@@ -39,7 +39,7 @@ async function nextStep(previousStep?: FRStep) {
 } 
 
 
-function renderTextInputCallback(cb: FRCallback, inputID: string) {
+function renderTextInputCallback(cb: FRCallback, inputID: string): void {
   const prompt = cb.getOutputByName('prompt', '');
   const wrapper = document.createElement('div');
 
@@ -59,7 +59,7 @@ function renderTextInputCallback(cb: FRCallback, inputID: string) {
   panelFormElem?.insertBefore(wrapper, submitButtonElem);
 }
 
-function mapCallbacksToComponents(cb: FRCallback) {
+function mapCallbacksToComponents(cb: FRCallback): void {
   const cbType = cb.getType();
   switch (cbType) {
     case 'NameCallback':
