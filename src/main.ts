@@ -15,14 +15,14 @@ Config.set({
     timeout: 3000, // 90000 or less
   },
   realmPath: "alpha", // e.g. 'alpha' or 'root'
-  tree: "Login", // e.g. 'sdkAuthenticationTree' or 'Login'
+  // tree: "AJ Choice Login", // e.g. 'sdkAuthenticationTree' or 'Login'
 });
 
 async function handleLogin(): Promise<void> {
   try {
     // Start authenitcation flow
     // 'redirect' option enables central login directly with auth server
-    await TokenManager.getTokens({ login: 'redirect' });
+    await TokenManager.getTokens({ login: 'redirect', query: { acr_values: "aj-choice" }});
   } catch (err) {
     console.error('Failed to start authentication flow', err);
   }
