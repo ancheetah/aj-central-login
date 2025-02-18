@@ -43,15 +43,17 @@ async function authorize(code: string, state: string): Promise<void> {
     // Trade code and state for an access token
     const tokens = await TokenManager.getTokens({ query: { code, state }});
     if (!tokens) {
-      throw new Error('Failed to get access token');
+      throw new Error('Failed to get tokens');
     }
     const { accessToken } = tokens;
     console.log('accessToken', accessToken);
 
-    if (accessToken) {
+    if (!accessToken) {
+      throw new Error('Failed to get access token')
+    }
+    
       const user = await UserManager.getCurrentUser();
       showUser(user);
-    }
 }
 
 function showUser(user: unknown): void {
