@@ -1,5 +1,5 @@
 import "./style.css";
-import { Config, FRAuth, FRCallback, FRStep } from "@forgerock/javascript-sdk";
+import { Config, FRAuth, FRCallback, FRStep, FRUser } from "@forgerock/javascript-sdk";
 
 Config.set({
   clientId: "aj-public-sdk-client", // e.g. 'ForgeRockSDKClient'
@@ -37,6 +37,15 @@ async function handleSubmit(event: Event, step?: FRStep): Promise<void> {
   step?.callbacks.forEach((cb) => setCallbackValue(cb));
   await nextStep(step);
   console.log("submitted!", step);
+}
+
+async function handleLogout(): Promise<void> {
+  try{
+    await FRUser.logout();
+    location.reload();
+} catch (err) {
+    throw new Error(`Failed to logout: ${err}`);
+}
 }
 
 async function nextStep(previousStep?: FRStep): Promise<void> {
@@ -100,3 +109,4 @@ function mapCallbacksToComponents(cb: FRCallback): void {
 }
 
 await nextStep();
+document.getElementById("logout-button")?.addEventListener("click", handleLogout);
