@@ -22,9 +22,12 @@ async function handleLogin(): Promise<void> {
   try {
     // Start authenitcation flow
     // 'redirect' option enables central login directly with auth server
-    await TokenManager.getTokens({ login: 'redirect', query: { acr_values: "aj-choice" }});
+    await TokenManager.getTokens({
+      login: "redirect",
+      query: { acr_values: "aj-choice" },
+    });
   } catch (err) {
-    console.error('Failed to start authentication flow', err);
+    console.error("Failed to start authentication flow", err);
   }
 }
 
@@ -38,36 +41,34 @@ async function handleLogout(): Promise<void> {
 }
 
 async function authorize(code: string, state: string): Promise<void> {
-    console.log('authorizing...', code, state);
+  console.log("authorizing...", code, state);
 
-    // Trade code and state for an access token
-    const tokens = await TokenManager.getTokens({ query: { code, state }});
-    if (!tokens) {
-      throw new Error('Failed to get tokens');
-    }
-    const { accessToken } = tokens;
-    console.log('accessToken', accessToken);
+  // Trade code and state for an access token
+  const tokens = await TokenManager.getTokens({ query: { code, state } });
+  if (!tokens) {
+    throw new Error("Failed to get tokens");
+  }
+  const { accessToken } = tokens;
+  console.log("accessToken", accessToken);
 
-    if (!accessToken) {
-      throw new Error('Failed to get access token')
-    }
-    
-      const user = await UserManager.getCurrentUser();
-      showUser(user);
+  if (!accessToken) {
+    throw new Error("Failed to get access token");
+  }
+
+  const user = await UserManager.getCurrentUser();
+  showUser(user);
 }
 
 function showUser(user: unknown): void {
-  const userElem = document.getElementById('user');
+  const userElem = document.getElementById("user");
   if (userElem) {
     userElem.innerHTML = JSON.stringify(user, null, 2);
-    userElem.style.display = 'block';
-  } 
+    userElem.style.display = "block";
+  }
 }
 
 // Add login/logout event listeners
-document
-  .getElementById("login-button")
-  ?.addEventListener("click", handleLogin);
+document.getElementById("login-button")?.addEventListener("click", handleLogin);
 document
   .getElementById("logout-button")
   ?.addEventListener("click", handleLogout);
@@ -75,8 +76,8 @@ document
 // Check URL for query parameters
 const url = new URL(window.location.href);
 const params = url.searchParams;
-const authCode = params.get('code');
-const state = params.get('state');
+const authCode = params.get("code");
+const state = params.get("state");
 console.log(url, params);
 
 // If this was a redirect then start authorization flow
