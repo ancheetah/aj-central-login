@@ -1,12 +1,9 @@
 import "./style.css";
 import {
   Config,
-  FRAuth,
-  FRCallback,
-  FRStep,
   FRUser,
+  TokenManager,
 } from "@forgerock/javascript-sdk";
-import { mapCallbacksToComponents } from "./components";
 
 Config.set({
   clientId: "aj-public-sdk-client", // e.g. 'ForgeRockSDKClient'
@@ -20,13 +17,12 @@ Config.set({
   tree: "Login", // e.g. 'sdkAuthenticationTree' or 'Login'
 });
 
-const panelFormElem = document.getElementById("panel-form");
-
-async function handleSubmit(event: Event, step?: FRStep): Promise<void> {
-  event.preventDefault();
-  step?.callbacks.forEach((cb) => setCallbackValue(cb));
-  await nextStep(step);
-  console.log("submitted!", step);
+async function handleLogin(): Promise<void> {
+  try {
+    await TokenManager.getTokens({ login: 'redirect' })
+  } catch (err) {
+    console.error('Failed to start auth flow', err);
+  }
 }
 
 async function handleLogout(): Promise<void> {
@@ -38,56 +34,9 @@ async function handleLogout(): Promise<void> {
   }
 }
 
-async function nextStep(previousStep?: FRStep): Promise<void> {
-  if (!panelFormElem) {
-    throw new Error("Failed to find panel");
-  }
-
-  try {
-    const nextStep = await FRAuth.next(previousStep);
-    console.log("nextStep", nextStep);
-    if (nextStep.type === "Step") {
-      nextStep.callbacks.forEach((cb) =>
-        mapCallbacksToComponents(cb, panelFormElem)
-      );
-      panelFormElem?.removeEventListener("submit", handleSubmit);
-      panelFormElem?.addEventListener("submit", (event) =>
-        handleSubmit(event, nextStep)
-      );
-    } else {
-      // Handle login success or failure
-      console.log("todo: handle login success or failure");
-    }
-  } catch (error) {
-    console.error("nextStep error: ", error);
-    panelFormElem.innerHTML = "Error";
-  }
-}
-
-
-function setCallbackValue(cb: FRCallback): void {
-  const cbType = cb.getType();
-  if (["NameCallback", "PasswordCallback"].includes(cbType)) {
-    const input = panelFormElem?.querySelector(
-      `input[name=${cbType === "NameCallback" ? "username" : "password"}]`
-    );
-    if (input instanceof HTMLInputElement) {
-      cb.setInputValue(input.value);
-    } else {
-      throw new Error(`Failed to set callback. Not found. ${cbType}`);
-    }
-  } else {
-    throw new Error(`Failed to set callback. Unknown callback type: ${cbType}`);
-  }
-}
-
+document
+  .getElementById("login-button")
+  ?.addEventListener("click", handleLogin);
 document
   .getElementById("logout-button")
   ?.addEventListener("click", handleLogout);
-
-// Start the authentication flow
-try {
-  await nextStep();
-} catch (error) {
-  console.error("Error starting authentication flow: ", error);
-}
