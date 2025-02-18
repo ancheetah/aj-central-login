@@ -3,6 +3,7 @@ import {
   Config,
   FRUser,
   TokenManager,
+  UserManager,
 } from "@forgerock/javascript-sdk";
 
 Config.set({
@@ -38,7 +39,27 @@ async function handleLogout(): Promise<void> {
 
 async function authorize(code: string, state: string): Promise<void> {
     console.log('authorizing...', code, state);
-    // todo: trade code and state for an access token
+
+    // Trade code and state for an access token
+    const tokens = await TokenManager.getTokens({ query: { code, state }});
+    if (!tokens) {
+      throw new Error('Failed to get access token');
+    }
+    const { accessToken } = tokens;
+    console.log('accessToken', accessToken);
+
+    if (accessToken) {
+      const user = await UserManager.getCurrentUser();
+      showUser(user);
+    }
+}
+
+function showUser(user: unknown): void {
+  const userElem = document.getElementById('user');
+  if (userElem) {
+    userElem.innerHTML = JSON.stringify(user, null, 2);
+    userElem.style.display = 'block';
+  } 
 }
 
 // Add login/logout event listeners
