@@ -31,7 +31,7 @@ async function handleLogin(): Promise<void> {
 async function handleLogout(): Promise<void> {
   try {
     await FRUser.logout();
-    location.reload();
+    location.assign(window.location.origin);
   } catch (err) {
     throw new Error(`Failed to logout: ${err}`);
   }
