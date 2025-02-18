@@ -19,9 +19,11 @@ Config.set({
 
 async function handleLogin(): Promise<void> {
   try {
-    await TokenManager.getTokens({ login: 'redirect' })
+    // Start authenitcation flow
+    // 'redirect' option enables central login directly with auth server
+    await TokenManager.getTokens({ login: 'redirect' });
   } catch (err) {
-    console.error('Failed to start auth flow', err);
+    console.error('Failed to start authentication flow', err);
   }
 }
 
@@ -34,9 +36,27 @@ async function handleLogout(): Promise<void> {
   }
 }
 
+async function authorize(code: string, state: string): Promise<void> {
+    console.log('authorizing...', code, state);
+    // todo: trade code and state for an access token
+}
+
+// Add login/logout event listeners
 document
   .getElementById("login-button")
   ?.addEventListener("click", handleLogin);
 document
   .getElementById("logout-button")
   ?.addEventListener("click", handleLogout);
+
+// Check URL for query parameters
+const url = new URL(window.location.href);
+const params = url.searchParams;
+const authCode = params.get('code');
+const state = params.get('state');
+console.log(url, params);
+
+// If this was a redirect then start authorization flow
+if (authCode && state) {
+  authorize(authCode, state);
+}
