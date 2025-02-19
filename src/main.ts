@@ -92,7 +92,10 @@ async function authorize(code: string, state: string): Promise<void> {
 
 function showUser(user: unknown): void {
   if (userElem) {
-    userElem.innerHTML = JSON.stringify(user, null, 2);
+    const userInfoElem = document.querySelector('#user pre')
+    if (userInfoElem) {
+      userInfoElem.innerHTML = JSON.stringify(user, null, 2);
+    }
     userElem.style.display = "block";
   }
 }
